@@ -517,6 +517,10 @@ task BigQueryLoadJson {
 
        echo "project_id = ~{project_id}" > ~/.bigqueryrc
 
+       CREATED_DATE=$(date +%s000)
+       EXPIRATION_DATE=$CREATED_DATE + 3600000
+       DATE=$EXPIRATION_DATE
+
        if [ ~{has_service_account_file} = 'true' ]; then
             gsutil cp ~{service_account_json_path} local.service_account.json
             export GOOGLE_APPLICATION_CREDENTIALS=local.service_account.json
@@ -531,7 +535,7 @@ task BigQueryLoadJson {
 
        if [ $BQ_SHOW_RC -ne 0 ]; then
          echo "Creating a pre-vat table ~{dataset_name}.~{variant_transcript_table}"
-         bq --location=US mk --project_id=~{project_id}  ~{dataset_name}.~{variant_transcript_table} ~{vt_schema}
+         bq --location=US mk --expiration=$DATE --project_id=~{project_id}  ~{dataset_name}.~{variant_transcript_table} ~{vt_schema}
        fi
 
        echo "Loading data into a pre-vat table ~{dataset_name}.~{variant_transcript_table}"
@@ -546,7 +550,7 @@ task BigQueryLoadJson {
 
        if [ $BQ_SHOW_RC -ne 0 ]; then
          echo "Creating a pre-vat table ~{dataset_name}.~{genes_table}"
-         bq --location=US mk --project_id=~{project_id}  ~{dataset_name}.~{genes_table} ~{genes_schema}
+         bq --location=US mk --expiration=$DATE --project_id=~{project_id}  ~{dataset_name}.~{genes_table} ~{genes_schema}
        fi
 
        echo "Loading data into a pre-vat table ~{dataset_name}.~{genes_table}"
